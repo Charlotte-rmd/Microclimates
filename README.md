@@ -1,13 +1,13 @@
 ------------------------------------->> Microclimate modelling on R <<---------------------------------------------
 
-### 0 - Intro
+# 0 - Intro
 
 Here I develop the different steps required to model microclimate in Wytham Woods using Ilya McLean's R package : microclimF.
 I would advice you have a look at the R guide provided here : https://rpubs.com/ilyamaclean/1248406, which is the one I followed. 
 
 
 
-### 1 - Gathering the inputs - 
+# 1 - Gathering the inputs - 
 
   ## A. Meteorological data
 
@@ -24,7 +24,7 @@ Wind speed (m/s) and
 Wind direction (degrees
 
 
-# See Era5 code 
+### See Era5 code 
 
 Several possibilities, whether taking :
  - Radcliff Observatory data on air temperature and precipitation (daily)
@@ -40,13 +40,13 @@ If you choose to download it from online, be carefull about the units of the par
 
 
 1) DTM, Canopy height = > LiDAR Imagery : https://environment.data.gov.uk/dataset/13787b9a-26a4-4775-8523-806d13af58fc
-   # See Veg code 
+   ### See Veg code 
 
 
 3) Soil-types + vegetation types => UAV-derived RGB-imagery (Georgios Voulgaris, Ella F. Cole, Sam J. Crofts, and Ben C. Sheldon)
-   # See Soil code 
+   ### See Soil code 
 
-# * 1rst bias  *
+#### * 1rst bias  *
 3) Soil reflectance : approximation based on bibliography such as this article : https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270629
 
 4) To compute the other vegetation parameters I used the function vegfromhab() from the microclima package ?
@@ -54,13 +54,13 @@ If you choose to download it from online, be carefull about the units of the par
 
    You must provide the Plant Area Index (PAI) for this function. The safest way to do so is using LiDAR Point Program Cloud data, but there are no data on the Wytahm 31km x 31km cell.
    Therefore, I estimated PAI as you can see in : 
-   # See Veg code
+   ### See Veg code
 
    I also estimate canopy clumpiness using the function clumpestimate, but I had to actually modify the function to make it work, as
-   # See Veg code
+   ### See Veg code
 
 
-### 1 - Running the model - 
+# 1 - Running the model - 
 
  Few things to be careful of : 
 
