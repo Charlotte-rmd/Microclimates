@@ -1,5 +1,54 @@
-# 0- Library ───────────────────────────────────────────────────────────────
+# 0- Library ───────────────────────────────────────────────────────────────────
 library(microclimf)
 library(terra)
 library(dplyr)
 library(micropoint)
+
+
+# 1- Import data ───────────────────────────────────────────────────────────────
+
+climdata <-read_csv("___.csv")
+veg <- readRDS('___.rds')
+soil <- readRDS('___.rds')
+dtm <- rast('___.tif')
+
+## Worth checking class and str of the above files
+
+
+# 2- Run pointfunction ─────────────────────────────────────────────────────────
+micropoint <-  microclimf::runpointmodel(weather = climdata, reqhgt = 2, dtm = dtm, vegp = veg, soilc = soil, runchecks = TRUE, zref = ___)
+tme <- as.POSIXct(micropoint$tmeorig)
+
+attributes(micropoint)   # To check what's inside
+
+# Micropoint countains nitably : weather - the original supplied weather data, but height adjusted if vegetation within the study area exceeds the height of temperature or wind speed measurements.
+# And dfo - this is a data.frame that stores all the useful stuff that the grid model needs
+# Check : 
+microp <- micropoint$dfo
+plot(microp$Tg ~ tme, xlab = "Month", ylab = "Temperature") # temperature of ground surface
+plot(microp$Tc ~ tme, xlab = "Month", ylab = "Temperature") # temperature at required height
+
+# 3- Run step by step ─────────────────────────────────────────────────────────
+
+## First,  reformat the input 
+
+microclimate_format  <- modelin(micropoint, veg, soil, dtm)
+
+## Then : 
+micro_moisture <- microclimf::soilmdistribute(microclimate_format)
+micro_radiation <- twostream(micro_moisture, reqhgt = ___)
+micro_windspeed <- wind(micro_radiation, reqhgt = ___)
+micro_groundtemp <- soiltemp(micro_windspeed, reqhgt = ___)
+micro_airtemp <- aboveground(micro_groundtemp, reqhgt = ___)
+
+# 3 bis- Run whole function ─────────────────────────────────────────────────────────
+
+microclimate_1m <- microclimf::runmicro(micropoint, reqhgt = ___, vegp = veg, soilc = soil, dtm = dtm)
+
+## Or you can subset the model :
+
+micropoint <- subsetpointmodel(micropoint, tstep = "month", what = "tmax") ## returns only the hours corresponding to the day in each month with the hottest temperature
+micropoint_subset <- runmicro(micropoint, reqhgt =0___, veg, soil, dtm)
+micropoint_subset$tme <- as.POSIXlt(micropoint$weather$obs_time, tz = "UTC")
+writetonc(micropoint_subset, "modelout.nc", dtm, reqhgt = ___)
+Tz<-rast("modelout.nc", "Tz")
